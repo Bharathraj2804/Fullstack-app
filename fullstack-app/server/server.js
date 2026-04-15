@@ -8,9 +8,9 @@ app.use(express.json());
 app.use(cors());
 
 // MongoDB connect
-mongoose.connect("mongodb+srv://Bharathraj:raju123@cluster0.o9w6fi2.mongodb.net/test")
-.then(() => console.log("DB Connected"))
-.catch(err => console.log(err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("DB Connected"))
+  .catch(err => console.log(err));
 // User Model
 const User = require("./models/User");
 
