@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve HTML files
+// Serve HTML
 app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
@@ -34,7 +34,7 @@ app.post("/signup", async (req, res) => {
       return res.send("Password must be at least 6 characters");
     }
 
-    // Check existing user
+    // ✅ Check existing user (ONLY HERE)
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.send("User already exists");
@@ -54,7 +54,7 @@ app.post("/signup", async (req, res) => {
     res.send("User Registered");
 
   } catch (err) {
-    console.log("FULL ERROR:", err);
+    console.log("ERROR:", err);
     res.status(500).send(err.message);
   }
 });
@@ -73,7 +73,7 @@ app.post("/login", async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
 
-    // ✅ correct condition
+    // ✅ Correct condition
     if (!isMatch) {
       return res.send("Invalid password");
     }
@@ -87,7 +87,7 @@ app.post("/login", async (req, res) => {
 });
 
 
-// ================= DB CONNECT + SERVER START =================
+// ================= DB CONNECT =================
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ DB Connected");
@@ -99,5 +99,5 @@ mongoose.connect(process.env.MONGO_URI)
     });
   })
   .catch(err => {
-    console.log("❌ DB Connection Error:", err);
+    console.log("❌ DB Error:", err);
   });
