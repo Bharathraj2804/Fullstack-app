@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Welcome</title>
+  <style>
+    body {
+      margin:0;
+      font-family: Arial;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      color:white;
+    }
+
+    .box {
+      background:white;
+      color:black;
+      padding:40px;
+      border-radius:15px;
+      text-align:center;
+      width:300px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    button {
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border:none;
+      border-radius:8px;
+      background:#667eea;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    button:hover {
+      background:#5a67d8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Welcome 👋</h2>
+  <p>Start your journey</p>
+
+  <button onclick="goSignup()">Signup</button>
+  <button onclick="goLogin()">Login</button>
+</div>
+
+<script>
+function goSignup(){ window.location.href="signup.html"; }
+function goLogin(){ window.location.href="login.html"; }
+</script>
+
+</body>
+</html>

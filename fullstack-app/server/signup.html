@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup</title>
+  <style>
+    body {
+      margin:0;
+      font-family: Arial;
+      background:#f0f2f5;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+
+    .box {
+      background:white;
+      padding:30px;
+      border-radius:12px;
+      width:300px;
+      text-align:center;
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    input {
+      width:90%;
+      padding:10px;
+      margin:10px 0;
+      border:1px solid #ccc;
+      border-radius:6px;
+    }
+
+    button {
+      width:100%;
+      padding:10px;
+      background:#28a745;
+      color:white;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    button:hover {
+      background:#218838;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Create Account</h2>
+  <input id="email" placeholder="Email">
+  <input id="password" placeholder="Password">
+  <button onclick="signup()">Signup</button>
+</div>
+
+<script>
+async function signup() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  // ✅ Validation
+  if (!email.includes("@")) {
+    alert("Enter valid email");
+    return;
+  }
+
+  if (password.length < 6) {
+    alert("Password must be at least 6 characters");
+    return;
+  }
+
+  const res = await fetch("http://localhost:5000/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.text();
+
+  if (data === "User Registered") {
+    window.location.href = "login.html";
+  } else {
+    alert(data);
+  }
+}
+</script>
+
+</body>
+</html>
