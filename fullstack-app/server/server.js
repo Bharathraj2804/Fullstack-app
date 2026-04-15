@@ -21,16 +21,34 @@ const User = require("./models/User");
 
 // Signup API
 app.post("/signup", async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  // ✅ Validation
-  if (!email.includes("@")) {
-    return res.send("Invalid email");
-  }
+    if (!email.includes("@")) {
+      return res.send("Invalid email");
+    }
 
-  if (password.length < 6) {
-    return res.send("Password must be at least 6 characters");
+    if (password.length < 6) {
+      return res.send("Password must be at least 6 characters");
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.send("User already exists");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({ email, password: hashedPassword });
+    await newUser.save();
+
+    res.send("User Registered");
+
+  } catch (err) {
+    console.log("FULL ERROR:", err);
+    res.status(500).send(err.message); // 🔥 shows real error
   }
+});
 
   // ✅ Check existing user
   const existingUser = await User.findOne({ email });
@@ -47,7 +65,7 @@ app.post("/signup", async (req, res) => {
 
   await newUser.save();
   res.send("User Registered");
-});
+;
 
 // Login API
 app.post("/login", async (req, res) => {
