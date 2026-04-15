@@ -5,13 +5,11 @@ const bcrypt = require("bcryptjs");
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 app.use(cors());
 
 // Serve HTML
 app.use(express.static(__dirname));
-
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
@@ -19,13 +17,11 @@ app.get("/", (req, res) => {
 // User Model
 const User = require("./models/User");
 
-
 // ================= SIGNUP =================
 app.post("/signup", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validation
     if (!email.includes("@")) {
       return res.send("Invalid email");
     }
@@ -34,31 +30,26 @@ app.post("/signup", async (req, res) => {
       return res.send("Password must be at least 6 characters");
     }
 
-    // ✅ Check existing user (ONLY HERE)
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.send("User already exists");
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Save user
     const newUser = new User({
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     await newUser.save();
 
     res.send("User Registered");
-
   } catch (err) {
-    console.log("ERROR:", err);
+    console.log(err);
     res.status(500).send(err.message);
   }
 });
-
 
 // ================= LOGIN =================
 app.post("/login", async (req, res) => {
@@ -71,21 +62,18 @@ app.post("/login", async (req, res) => {
       return res.send("User not found");
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password.trim(), user.password);
 
-    // ✅ Correct condition
     if (!isMatch) {
       return res.send("Invalid password");
     }
 
     res.send("Login Successful");
-
   } catch (err) {
     console.log(err);
     res.status(500).send("Server error");
   }
 });
-
 
 // ================= DB CONNECT =================
 mongoose.connect(process.env.MONGO_URI)
@@ -98,6 +86,6 @@ mongoose.connect(process.env.MONGO_URI)
       console.log("🚀 Server running on port", PORT);
     });
   })
-  .catch(err => {
+  .catch((err) => {
     console.log("❌ DB Error:", err);
   });
