@@ -68,7 +68,7 @@ async function login() {
   const data = await res.text();
 
   if (data === "Login successful") {
-    window.location.href = "home.html";  // ✅ direct redirect
+    window.location.href = "/home.html";  // ✅ direct redirect
   } else {
     alert(data); // show only errors
   }
