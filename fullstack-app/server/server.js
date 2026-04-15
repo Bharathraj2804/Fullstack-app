@@ -5,29 +5,27 @@ const bcrypt = require("bcryptjs");
 
 const app = express();
 
+// Middleware
 app.use(express.json());
 app.use(cors());
 
 // Serve HTML files
 app.use(express.static(__dirname));
+
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
-// MongoDB connect
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("DB Connected"))
-  .catch(err => console.log("DB Error:", err));
-
 // User Model
 const User = require("./models/User");
+
 
 // ================= SIGNUP =================
 app.post("/signup", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // validation
+    // Validation
     if (!email.includes("@")) {
       return res.send("Invalid email");
     }
@@ -36,17 +34,21 @@ app.post("/signup", async (req, res) => {
       return res.send("Password must be at least 6 characters");
     }
 
-    // check existing user
+    // Check existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.send("User already exists");
     }
 
-    // hash password
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // save user
-    const newUser = new User({ email, password: hashedPassword });
+    // Save user
+    const newUser = new User({
+      email,
+      password: hashedPassword
+    });
+
     await newUser.save();
 
     res.send("User Registered");
@@ -57,16 +59,24 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+
 // ================= LOGIN =================
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.send("User not found");
+
+    if (!user) {
+      return res.send("User not found");
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.send("Invalid password");
+
+    // ✅ correct condition
+    if (!isMatch) {
+      return res.send("Invalid password");
+    }
 
     res.send("Login Successful");
 
@@ -76,8 +86,18 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
-});
+
+// ================= DB CONNECT + SERVER START =================
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("✅ DB Connected");
+
+    const PORT = process.env.PORT || 5000;
+
+    app.listen(PORT, () => {
+      console.log("🚀 Server running on port", PORT);
+    });
+  })
+  .catch(err => {
+    console.log("❌ DB Connection Error:", err);
+  });
